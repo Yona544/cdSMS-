@@ -1,0 +1,60 @@
+﻿.Tab_Theme .ajax__tab_header
+{
+    font-family: verdana,tahoma,helvetica;
+    font-size: 12px;
+    border-bottom: solid 1px #3d3d3d; font-weight:bold;  
+}
+.Tab_Theme .ajax__tab_outer
+{
+    padding-right: 4px;
+    height: 21px;
+    background-color: #C0C0C0;
+    margin-right: 2px;
+    border-right: solid 1px #666666;
+    border-top: solid 1px #aaaaaa;
+}
+.Tab_Theme .ajax__tab_inner
+{
+    padding-left: 3px;
+    background-color: #C0C0C0;
+}
+.Tab_Theme .ajax__tab_tab
+{
+    height: 13px;
+    padding: 4px;
+    margin: 0;
+}
+.Tab_Theme .ajax__tab_hover .ajax__tab_outer
+{
+    background-color: #3d3d3d;
+}
+.Tab_Theme .ajax__tab_hover .ajax__tab_inner
+{
+    background-color: #3d3d3d;
+}
+.Tab_Theme .ajax__tab_hover .ajax__tab_tab
+{
+    color: #ffffff;
+}
+.Tab_Theme .ajax__tab_active .ajax__tab_outer
+{
+    background-color: #fff;
+    border-left: solid 1px #3d3d3d;
+}
+.Tab_Theme .ajax__tab_active .ajax__tab_inner
+{
+    background-color: #fff;
+}
+.Tab_Theme .ajax__tab_active .ajax__tab_tab
+{
+  color: #000000;
+}
+.Tab_Theme .ajax__tab_body
+{
+    font-family: verdana,tahoma,helvetica;
+    font-size: 10pt;
+    border: 1px solid #3d3d3d;
+    border-top: 0;
+    padding: 8px;
+    background-color: #ffffff;
+}

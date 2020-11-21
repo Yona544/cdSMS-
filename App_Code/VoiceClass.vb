@@ -16,6 +16,16 @@ Public Class VoiceClass
         Public VoiceType As String
     End Class
 
+    Public Class VoiceFileData
+        Public Id As Integer
+        Public FileName As String
+        Public FileType As String
+        Public EntryDate As String
+        Public Description As String
+        Public Taglist As String
+        Public CallerNumber As String
+    End Class
+
     Public Function AddVoice(ByVal DisData As VoiceData) As Double
       
         Dim conn As OleDbConnection = New OleDbConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ToString)
@@ -113,9 +123,15 @@ Public Class VoiceClass
         cmd.ExecuteNonQuery()
         conn.Close()
     End Sub
-    Public Sub insertfiledetail(ByVal filename As String, ByVal filetype As String)
+    Public Sub insertfiledetail(ByVal filename As String, ByVal filetype As String, Description As String, Taglist As String, CallerNumber As String)
+
+        Dim timeUtc = DateTime.UtcNow
+        Dim easternZone As TimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time")
+        Dim easternTime As DateTime = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone)
+
+
         Dim conn As OleDbConnection = New OleDbConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ToString)
-        Dim cmd As OleDbCommand = New OleDbCommand("insert into Voicefile(Filename,filetype) values('" & filename & "','" & filetype & "')", conn)
+        Dim cmd As OleDbCommand = New OleDbCommand("insert into Voicefile(Filename,filetype,Description,Taglist,CallerNumber,Entrydate,UpdatedDate) values('" & filename & "','" & filetype & "','" & Description & "','" & Taglist & "','" & CallerNumber & "','" & easternTime & "','" & easternTime & "')", conn)
         cmd.CommandType = Data.CommandType.Text
         conn.Open()
         cmd.ExecuteNonQuery()
@@ -193,10 +209,30 @@ Public Class VoiceClass
         End Try
         Return filename
     End Function
-    Public Function saveAsVoice(ByVal id As Integer) As Double
 
 
+    Public Function GetFileDetails(ByVal search As String) As VoiceFileData
+        Dim VFdata As VoiceFileData = New VoiceFileData
+        Dim conn As OleDbConnection = New OleDbConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ToString)
+        conn.Open()
+        Dim cmd As OleDbCommand = New OleDbCommand("select * from Voicefile " & search, conn)
+        cmd.CommandType = Data.CommandType.Text
+        Dim rec As OleDbDataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection)
+        While rec.Read
+            VFdata.FileName = Trim(rec.Item("Filename"))
+            VFdata.FileType = Trim(rec.Item("filetype"))
+            VFdata.Description = Trim(IIf(IsDBNull(rec.Item("Description")), "", rec.Item("Description")))
+            VFdata.EntryDate = Trim(rec.Item("EntryDate"))
+            VFdata.Taglist = Trim(IIf(IsDBNull(rec.Item("Taglist")), "", rec.Item("Taglist")))
+            VFdata.CallerNumber = Trim(IIf(IsDBNull(rec.Item("CallerNumber")), "", rec.Item("CallerNumber")))
+        End While
+        rec.Close()
+        cmd.Dispose()
+        conn.Close()
+        Return VFdata
+    End Function
 
+    Public Sub saveAsVoice(ByVal id As Integer)
 
         Dim conn As OleDbConnection = New OleDbConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ToString)
         'Dim cmd As OleDbCommand = New OleDbCommand("insert into Voice( Name,VoiceText,VoiceGender,VoiceAge,VoiceRate,Isactive,TropoVoice)   select ('copy '+name ),VoiceText,VoiceGender,VoiceAge,VoiceRate,isactive,TropoVoice from voice where id=" & id & "", conn)
@@ -206,7 +242,8 @@ Public Class VoiceClass
         cmd.ExecuteNonQuery()
         conn.Close()
 
-    End Function
+    End Sub
+
     Public Function GetMaxidVoiceXML() As Integer
         Dim conn As OleDbConnection = New OleDbConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ToString)
         Dim cmd As OleDbCommand = New OleDbCommand("select max(id) from VoiceXML", conn)
@@ -239,4 +276,18 @@ Public Class VoiceClass
         Return result
 
     End Function
+    Public Sub EditVoiceFile(ByVal VoiceData As VoiceFileData)
+
+        Dim timeUtc = DateTime.UtcNow
+        Dim easternZone As TimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time")
+        Dim easternTime As DateTime = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone)
+
+        Dim conn As OleDbConnection = New OleDbConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ToString)
+        Dim cmd As OleDbCommand = New OleDbCommand("UPDATE Voicefile set Description='" & VoiceData.Description & "',CallerNumber='" & VoiceData.CallerNumber & "',Taglist='" & VoiceData.Taglist & "',UpdatedDate='" & easternTime & "'  where id=" & VoiceData.Id & "", conn)
+        cmd.CommandType = Data.CommandType.Text
+        conn.Open()
+        cmd.ExecuteNonQuery()
+        conn.Close()
+
+    End Sub
 End Class

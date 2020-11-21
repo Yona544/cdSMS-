@@ -7,6 +7,10 @@ Partial Class admin_include_top
 
     Private Sub Page_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         'to load link navigation for login users
+
+       
+
+
         If Len(Session.Contents("boothid")) > 0 Then
             Dim select_substr As String = "select_sub"
             MenuScript = MenuScript & "<ul class='current' style>"

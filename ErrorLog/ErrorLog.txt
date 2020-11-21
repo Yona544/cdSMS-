@@ -1,0 +1,94 @@
+
+============
+10-24-2020 15:21:25
+network=SMS
+Msg=
+xmlfile=F1AB.xml
+sendToNumber=
+
+============10-24-2020 15:21:28
+Error=Could not load file or assembly 'Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed' or one of its dependencies. The system cannot find the file specified.
+
+============
+10-24-2020 15:22:01
+network=SMS
+Msg=
+xmlfile=F1AB0.xml
+sendToNumber=
+
+============10-24-2020 15:22:02
+Error=Could not load file or assembly 'Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed' or one of its dependencies. The system cannot find the file specified.
+
+============
+10-24-2020 15:39:31
+network=SMS
+Msg=
+xmlfile=F1AB.xml
+sendToNumber=
+
+============10-24-2020 15:39:33
+Error=Message body is required.
+
+============
+10-24-2020 15:41:33
+network=SMS
+Msg=
+xmlfile=F1B61.xml
+sendToNumber=
+
+============10-24-2020 15:41:35
+Error=Message body is required.
+
+============
+10-24-2020 16:02:27
+network=SMS
+Msg=
+xmlfile=F1AB.xml
+sendToNumber=
+
+============10-24-2020 16:02:30
+Error=Message body is required.
+
+============
+10-29-2020 10:24:16============
+10/29/2020 12:54:16 AM
+network=SMS
+Msg=
+xmlfile=F1E20.xml
+sendToNumber=
+
+============10-29-2020 10:24:19
+Error=Message body is required.
+
+============
+10/31/2020 3:15:00 AM
+network=SMS
+Msg=
+xmlfile=F1CAC.xml
+sendToNumber=
+
+============
+10/31/2020 3:15:00 AM
+Error=Message body is required.
+
+============
+10/31/2020 3:32:13 AM
+network=SMS
+Msg=
+xmlfile=FFC6E.xml
+sendToNumber=
+
+============
+10/31/2020 3:32:13 AM
+Error=Message body is required.
+
+============
+10/31/2020 3:32:16 AM
+network=SMS
+Msg=
+xmlfile=FFC6E.xml
+sendToNumber=
+
+============
+10/31/2020 3:32:16 AM
+Error=Message body is required.

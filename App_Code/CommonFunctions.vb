@@ -206,335 +206,408 @@ Public Class CommonFunctions
             End If
         End If
     End Sub
-    Public Sub runXmlFile(Path As String, ActualFileName As String)
+    Public Sub runXmlFile(Path As String, ActualFileName As String, CallerNumber As String)
         Dim myRSSFeed As New DataSet
+
         Try
+            'Dim wr As FileWebRequest = CType(WebRequest.Create(Path), FileWebRequest)
+            'wr.Timeout = 10000 ' 10 seconds
+            ''get the response object.
+            'Dim resp As WebResponse = wr.GetResponse()
+            'Dim stream As Stream = resp.GetResponseStream()
+            'Dim reader As XmlTextReader = New XmlTextReader(stream)
+            'reader.XmlResolver = Nothing
+            'contentxml()
+
+            myRSSFeed.ReadXml(Path)
+
+
+        Catch ex As Exception
+            Exit Sub
+        End Try
+
+        Dim customers As DataTable = myRSSFeed.Tables("customers")
+        Dim customer As DataTable = myRSSFeed.Tables("customer")
+        Dim SMSMessage_ID As Integer = 0
+
+        Dim SMSVoiceText As String = ""
+        Dim SMSVoiceGender As String = ""
+        Dim SMSVoiceAge As Integer = 0
+        Dim SMSVoiceRate As String = ""
+        Dim VoiceOBj As VoiceClass = New VoiceClass
+        Dim SMSVoiceTextalter As String = ""
+
+        If (customers.Rows.Count > 0) Then
             Try
-                'Dim wr As FileWebRequest = CType(WebRequest.Create(Path), FileWebRequest)
-                'wr.Timeout = 10000 ' 10 seconds
-                ''get the response object.
-                'Dim resp As WebResponse = wr.GetResponse()
-                'Dim stream As Stream = resp.GetResponseStream()
-                'Dim reader As XmlTextReader = New XmlTextReader(stream)
-                'reader.XmlResolver = Nothing
-                'contentxml()
-
-                myRSSFeed.ReadXml(Path)
-
-
+                SMSMessage_ID = customers.Rows(0)("SMSMessage_ID").ToString()
             Catch ex As Exception
-                Exit Sub
+                SMSMessage_ID = 0
             End Try
+            If SMSMessage_ID > 0 Then
+                Dim rec As OleDbDataReader = VoiceOBj.GetVoiceReader(" where id=" & SMSMessage_ID)
+                While rec.Read
+                    SMSVoiceText = rec.Item("VoiceText")
+                End While
 
-            Dim customers As DataTable = myRSSFeed.Tables("customers")
-            Dim customer As DataTable = myRSSFeed.Tables("customer")
-            Dim SMSMessage_ID As Integer = 0
-
-            Dim SMSVoiceText As String = ""
-            Dim SMSVoiceGender As String = ""
-            Dim SMSVoiceAge As Integer = 0
-            Dim SMSVoiceRate As String = ""
-            Dim VoiceOBj As VoiceClass = New VoiceClass
-            Dim SMSVoiceTextalter As String = ""
-
-            If (customers.Rows.Count > 0) Then
-                Try
-                    SMSMessage_ID = customers.Rows(0)("SMSMessage_ID").ToString()
-                Catch ex As Exception
-                    SMSMessage_ID = 0
-                End Try
-                If SMSMessage_ID > 0 Then
-                    Dim rec As OleDbDataReader = VoiceOBj.GetVoiceReader(" where id=" & SMSMessage_ID)
-                    While rec.Read
-                        SMSVoiceText = rec.Item("VoiceText")
-                    End While
-
-                    rec.Close()
-                End If
-
+                rec.Close()
             End If
-            If (customer.Rows.Count > 0) Then
-                Dim callNo As String = ""
-                Dim smsNo As String = ""
-                For Each row As DataRow In customer.Rows
-                    SMSVoiceTextalter = SMSVoiceText
-                    Dim Message_ID As Integer = 0
-                    'Dim SMSMessage_ID As Integer = 0
-                    Dim VoiceText As String = ""
-                    Dim VoiceGender As String = ""
-                    Dim VoiceAge As Integer = 0
-                    Dim VoiceRate As String = ""
-                    Dim TropoVoice As String = ""
+
+        End If
+        If (customer.Rows.Count > 0) Then
+            Dim callNo As String = ""
+            Dim smsNo As String = ""
+            For Each row As DataRow In customer.Rows
+                SMSVoiceTextalter = SMSVoiceText
+                Dim Message_ID As Integer = 0
+                'Dim SMSMessage_ID As Integer = 0
+                Dim VoiceText As String = ""
+                Dim VoiceGender As String = ""
+                Dim VoiceAge As Integer = 0
+                Dim VoiceRate As String = ""
+                Dim TropoVoice As String = ""
 
 
 
 
-                    Dim VoiceTextalter As String = ""
+                Dim VoiceTextalter As String = ""
 
 
-                    For Each column As DataColumn In customer.Columns
-                        If column.ColumnName = "Message_ID" Then
-                            Message_ID = row(column).ToString()
-                            If Message_ID > 0 Then
-                                Dim rec As OleDbDataReader = VoiceOBj.GetVoiceReader(" where id=" & Message_ID)
-                                While rec.Read
-                                    VoiceText = rec.Item("VoiceText")
-                                    VoiceGender = rec.Item("VoiceGender")
-                                    VoiceAge = rec.Item("VoiceAge")
-                                    VoiceRate = rec.Item("VoiceRate")
-                                    TropoVoice = rec.Item("TropoVoice")
-                                End While
-                                rec.Close()
-                                VoiceTextalter = VoiceText
-                            End If
-
-
+                For Each column As DataColumn In customer.Columns
+                    If column.ColumnName = "Message_ID" Then
+                        Message_ID = row(column).ToString()
+                        If Message_ID > 0 Then
+                            Dim rec As OleDbDataReader = VoiceOBj.GetVoiceReader(" where id=" & Message_ID)
+                            While rec.Read
+                                VoiceText = rec.Item("VoiceText")
+                                VoiceGender = rec.Item("VoiceGender")
+                                VoiceAge = rec.Item("VoiceAge")
+                                VoiceRate = rec.Item("VoiceRate")
+                                TropoVoice = rec.Item("TropoVoice")
+                            End While
+                            rec.Close()
+                            VoiceTextalter = VoiceText
                         End If
 
 
-                        If column.ColumnName = "CALL" Then
-                            callNo = row(column).ToString()
-                        End If
-                        If column.ColumnName = "sms" Then
-                            smsNo = row(column).ToString()
-                        End If
-
-                        Dim colname As String = column.ColumnName
-
-                        'THis is FOR VOICE PART---- replace variable and add SSML for VOICE
-                        If Len(callNo) > 0 Then
-                            VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}~SSML~number", say_as(row(column).ToString(), "number"))
-                            VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}~SSML~currency", say_as(row(column).ToString(), "currency"))
-                            VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}~SSML~digits", say_as(row(column).ToString(), "digits"))
-                            VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}~SSML~phone", say_as(row(column).ToString(), "telephone"))
-                            VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}~SSML~date", say_as(row(column).ToString(), "date"))
-                            VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}~SSML~time", say_as(row(column).ToString(), "time"))
-                            VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}", row(column).ToString())
-
-                        End If
-                        'THis is FOR SMS PART---- replace variable only add SSML for VOICE only Not Support in SMS
-                        If Len(smsNo) > 0 Then
-                            SMSVoiceTextalter = SMSVoiceTextalter.Replace("{" & colname & "}", row(column).ToString())
-                        End If
-                    Next
-
-                    Dim MP3fistpos As Integer = 1
-                    Dim MP3secpos As Integer = 1
-                    Do Until MP3fistpos = 0
-                        MP3fistpos = InStr(VoiceTextalter, "{MP3~")
-                        If MP3fistpos > 0 Then
-                            MP3secpos = InStr(MP3fistpos, VoiceTextalter, "}")
-                            Dim MP3seekpos As Integer = MP3secpos - MP3fistpos
-
-                            Dim MP3CUTstr As String = VoiceTextalter.Substring(MP3fistpos, MP3seekpos - 1)
-                            Dim arr As String() = MP3CUTstr.Split("~")
-                            If arr(0).ToString = "MP3" Then
-                                Dim Filename As String = ""
-                                Filename = System.Configuration.ConfigurationManager.AppSettings("BasePath") & "files/MP3/" & arr(1).ToString & ".mp3"
-                                VoiceTextalter = VoiceTextalter.Replace("{MP3~" & arr(1).ToString & "}", Filename)
-                            End If
-                        End If
-                    Loop
-
-                    Dim Nfistpos As Integer = 1
-                    Dim Nsecpos As Integer = 1
-                    Do Until Nfistpos = 0
-                        Nfistpos = InStr(VoiceTextalter, "{")
-                        If Nfistpos > 0 Then
-                            Nsecpos = InStr(Nfistpos, VoiceTextalter, "}")
-                            Dim Nseekpos As Integer = Nsecpos - Nfistpos
-                            Dim NCUTstr As String = VoiceTextalter.Substring(Nfistpos, Nseekpos - 1)
-                            If Len(NCUTstr) > 0 Then
-                                VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}~SSML~number", "")
-                                VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}~SSML~currency", "")
-                                VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}~SSML~digits", "")
-                                VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}~SSML~phone", "")
-                                VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}~SSML~date", "")
-                                VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}~SSML~time", "")
-                                VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}", "")
-                            End If
-                        End If
-                    Loop
-
-                    If SMSMessage_ID > 0 Then
-                        If Len(smsNo) > 0 Then
-                            Dim NSMSfistpos As Integer = 1
-                            Dim NSMSsecpos As Integer = 1
-                            Do Until NSMSfistpos = 0
-                                NSMSfistpos = InStr(SMSVoiceTextalter, "{")
-                                If NSMSfistpos > 0 Then
-                                    NSMSsecpos = InStr(NSMSfistpos, SMSVoiceTextalter, "}")
-                                    Dim NSseekpos As Integer = NSMSsecpos - NSMSfistpos
-                                    Dim NCUTstr As String = SMSVoiceTextalter.Substring(NSMSfistpos, NSseekpos - 1)
-                                    If Len(NCUTstr) > 0 Then
-                                        SMSVoiceTextalter = SMSVoiceTextalter.Replace("{" & NCUTstr & "}", "")
-                                    End If
-                                End If
-                            Loop
-                        End If
                     End If
 
 
-                 
+                    If column.ColumnName = "CALL" Then
+                        callNo = row(column).ToString()
+                    End If
+                    If column.ColumnName = "sms" Then
+                        smsNo = row(column).ToString()
+                    End If
 
-                    'create call
-                    If Message_ID > 0 Then
+                    Dim colname As String = column.ColumnName
 
-                        If Len(callNo) > 0 Then
+                    'THis is FOR VOICE PART---- replace variable and add SSML for VOICE
+                    If Len(callNo) > 0 Then
+                        VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}~SSML~number", say_as(row(column).ToString(), "number"))
+                        VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}~SSML~currency", say_as(row(column).ToString(), "currency"))
+                        VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}~SSML~digits", say_as(row(column).ToString(), "digits"))
+                        VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}~SSML~phone", say_as(row(column).ToString(), "telephone"))
+                        VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}~SSML~date", say_as(row(column).ToString(), "date"))
+                        VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}~SSML~time", say_as(row(column).ToString(), "time"))
+                        VoiceTextalter = VoiceTextalter.Replace("{" & colname & "}", row(column).ToString())
 
+                    End If
+                    'THis is FOR SMS PART---- replace variable only add SSML for VOICE only Not Support in SMS
+                    If Len(smsNo) > 0 Then
+                        SMSVoiceTextalter = SMSVoiceTextalter.Replace("{" & colname & "}", row(column).ToString())
+                    End If
+                Next
 
-                            Dim Message As String = Environment.NewLine
-                            Message = Message & "============"
-                            Message = Message & Environment.NewLine
-							Message = Message & DateString & " " & TimeString
-                            Message = Message & Environment.NewLine
-                            Message = Message & "network=Call"
-                            Message = Message & Environment.NewLine
-                            Message = Message & "Msg=" & VoiceTextalter
-                            Message = Message & Environment.NewLine
-                            Message = Message & "xmlfile=" & ActualFileName
-                            Message = Message & Environment.NewLine
-                            Message = Message & "sendToNumber=" & callNo
+                Dim MP3fistpos As Integer = 1
+                Dim MP3secpos As Integer = 1
+                Do Until MP3fistpos = 0
+                    MP3fistpos = InStr(VoiceTextalter, "{MP3~")
+                    If MP3fistpos > 0 Then
+                        MP3secpos = InStr(MP3fistpos, VoiceTextalter, "}")
+                        Dim MP3seekpos As Integer = MP3secpos - MP3fistpos
 
+                        Dim MP3CUTstr As String = VoiceTextalter.Substring(MP3fistpos, MP3seekpos - 1)
+                        Dim arr As String() = MP3CUTstr.Split("~")
+                        If arr(0).ToString = "MP3" Then
+                            Dim Filename As String = ""
+                            Filename = System.Configuration.ConfigurationManager.AppSettings("BasePath") & "files/MP3/" & arr(1).ToString & ".mp3"
+                            VoiceTextalter = VoiceTextalter.Replace("{MP3~" & arr(1).ToString & "}", Filename)
+                        End If
+                    End If
+                Loop
 
-                            Dim Temppath As String = HttpContext.Current.Server.MapPath("ErrorLog/ErrorLog.txt")
-                            Using writer As New StreamWriter(Temppath, True)
-                                writer.WriteLine(Message)
-                                writer.Close()
-                            End Using
+                Dim Nfistpos As Integer = 1
+                Dim Nsecpos As Integer = 1
+                Do Until Nfistpos = 0
+                    Nfistpos = InStr(VoiceTextalter, "{")
+                    If Nfistpos > 0 Then
+                        Nsecpos = InStr(Nfistpos, VoiceTextalter, "}")
+                        Dim Nseekpos As Integer = Nsecpos - Nfistpos
+                        Dim NCUTstr As String = VoiceTextalter.Substring(Nfistpos, Nseekpos - 1)
+                        If Len(NCUTstr) > 0 Then
+                            VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}~SSML~number", "")
+                            VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}~SSML~currency", "")
+                            VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}~SSML~digits", "")
+                            VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}~SSML~phone", "")
+                            VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}~SSML~date", "")
+                            VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}~SSML~time", "")
+                            VoiceTextalter = VoiceTextalter.Replace("{" & NCUTstr & "}", "")
+                        End If
+                    End If
+                Loop
 
-
-                            Dim tmpstr As String = VoiceTextalter
-                            'Dim Mainarr() As String
-                            Dim Mainarr As ArrayList = New ArrayList
-                            Dim fistpos As Integer = 1
-                            Dim secpos As Integer = 1
-                            Dim tmpremaingstr As String = tmpstr
-                            Do Until fistpos = 0
-
-                                fistpos = InStr(tmpremaingstr, "http://")
-                                If fistpos > 0 Then
-                                    secpos = InStr(fistpos, tmpremaingstr, ".mp3")
-                                    Dim seekpos As Integer = secpos - fistpos
-                                    Dim tmpFirstval As String = tmpremaingstr.Substring(0, fistpos - 1)
-                                    Dim tmpSecoundval As String = tmpremaingstr.Substring(fistpos - 1, seekpos + 4)
-                                    'Mainarr(cnt) = tmpFirstval
-                                    If Len(tmpFirstval) > 0 Then
-                                        Mainarr.Add(tmpFirstval)
-                                    End If
-                                    If Len(tmpSecoundval) > 0 Then
-                                        Mainarr.Add(tmpSecoundval)
-                                    End If
-                                    tmpremaingstr = tmpremaingstr.Substring(secpos + 3, tmpremaingstr.Length - (secpos + 3))
+                If SMSMessage_ID > 0 Then
+                    If Len(smsNo) > 0 Then
+                        Dim NSMSfistpos As Integer = 1
+                        Dim NSMSsecpos As Integer = 1
+                        Do Until NSMSfistpos = 0
+                            NSMSfistpos = InStr(SMSVoiceTextalter, "{")
+                            If NSMSfistpos > 0 Then
+                                NSMSsecpos = InStr(NSMSfistpos, SMSVoiceTextalter, "}")
+                                Dim NSseekpos As Integer = NSMSsecpos - NSMSfistpos
+                                Dim NCUTstr As String = SMSVoiceTextalter.Substring(NSMSfistpos, NSseekpos - 1)
+                                If Len(NCUTstr) > 0 Then
+                                    SMSVoiceTextalter = SMSVoiceTextalter.Replace("{" & NCUTstr & "}", "")
                                 End If
-                            Loop
-                            If Len(tmpremaingstr) > 0 Then
-                                Mainarr.Add(tmpremaingstr)
                             End If
+                        Loop
+                    End If
+                End If
 
-                            Dim XmlString As String = "<Response>"
-                            For Each num As String In Mainarr
-                                If LCase(Left(num, 7)) = "http://" Then
-                                    XmlString = XmlString & "<Play>" & num & "</Play>"
-                                Else
-                                    If Len(TropoVoice) > 0 Then
-                                        XmlString = XmlString & "<Say voice=''" & TropoVoice & "''>"
-                                    Else
-                                        XmlString = XmlString & "<Say voice=''" & VoiceGender & "''>"
-                                    End If
 
-                                    XmlString = XmlString & "<prosody rate=''" & VoiceRate & "''>"
-                                    XmlString = XmlString & num
-                                    XmlString = XmlString & "</prosody></Say>"
+
+
+                'create call
+                If Message_ID > 0 Then
+
+                    If Len(callNo) > 0 Then
+
+
+                        Dim timeUtc = DateTime.UtcNow
+                        Dim easternZone As TimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time")
+                        Dim easternTime As DateTime = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone)
+
+
+                        Dim Message As String = Environment.NewLine
+                        Message = Message & "============"
+                        Message = Message & Environment.NewLine
+                        Message = Message & easternTime
+                        'Message = Message & DateString & " " & TimeString
+                        'Message = Message & "============"
+                        'Message = Message & Environment.NewLine
+                        'Message = Message & easternTime
+                        Message = Message & Environment.NewLine
+                        Message = Message & "network=Call"
+                        Message = Message & Environment.NewLine
+                        Message = Message & "Msg=" & VoiceTextalter
+                        Message = Message & Environment.NewLine
+                        Message = Message & "xmlfile=" & ActualFileName
+                        Message = Message & Environment.NewLine
+                        Message = Message & "sendToNumber=" & callNo
+
+
+                        Dim Temppath As String = HttpContext.Current.Server.MapPath("ErrorLog/ErrorLog.txt")
+                        Using writer As New StreamWriter(Temppath, True)
+                            writer.WriteLine(Message)
+                            writer.Close()
+                        End Using
+
+
+                        Dim tmpstr As String = VoiceTextalter
+                        'Dim Mainarr() As String
+                        Dim Mainarr As ArrayList = New ArrayList
+                        Dim fistpos As Integer = 1
+                        Dim secpos As Integer = 1
+                        Dim tmpremaingstr As String = tmpstr
+                        Do Until fistpos = 0
+
+                            fistpos = InStr(tmpremaingstr, "http://")
+                            If fistpos > 0 Then
+                                secpos = InStr(fistpos, tmpremaingstr, ".mp3")
+                                Dim seekpos As Integer = secpos - fistpos
+                                Dim tmpFirstval As String = tmpremaingstr.Substring(0, fistpos - 1)
+                                Dim tmpSecoundval As String = tmpremaingstr.Substring(fistpos - 1, seekpos + 4)
+                                'Mainarr(cnt) = tmpFirstval
+                                If Len(tmpFirstval) > 0 Then
+                                    Mainarr.Add(tmpFirstval)
                                 End If
-                            Next
-                            XmlString = XmlString & "</Response>"
+                                If Len(tmpSecoundval) > 0 Then
+                                    Mainarr.Add(tmpSecoundval)
+                                End If
+                                tmpremaingstr = tmpremaingstr.Substring(secpos + 3, tmpremaingstr.Length - (secpos + 3))
+                            End If
+                        Loop
+                        If Len(tmpremaingstr) > 0 Then
+                            Mainarr.Add(tmpremaingstr)
+                        End If
 
-                            VoiceOBj.insertQuery("insert into VoiceXML(xmlCont,XMLFileName) values('" & XmlString & "','" & ActualFileName & "')")
+                        Dim XmlString As String = "<Response>"
+                        For Each num As String In Mainarr
+                            If LCase(Left(num, 7)) = "http://" Then
+                                XmlString = XmlString & "<Play>" & num & "</Play>"
+                            Else
+                                If Len(TropoVoice) > 0 Then
+                                    XmlString = XmlString & "<Say voice=''" & TropoVoice & "''>"
+                                Else
+                                    XmlString = XmlString & "<Say voice=''" & VoiceGender & "''>"
+                                End If
 
-                            Dim VoiceXMLID As Integer = VoiceOBj.GetMaxidVoiceXML()
+                                XmlString = XmlString & "<prosody rate=''" & VoiceRate & "''>"
+                                XmlString = XmlString & num
+                                XmlString = XmlString & "</prosody></Say>"
+                            End If
+                        Next
+                        XmlString = XmlString & "</Response>"
+
+                        VoiceOBj.insertQuery("insert into VoiceXML(xmlCont,XMLFileName) values('" & XmlString & "','" & ActualFileName & "')")
+
+                        Dim VoiceXMLID As Integer = VoiceOBj.GetMaxidVoiceXML()
 
 
+
+                        Try
                             Dim accountSid As String = System.Configuration.ConfigurationManager.AppSettings.Item("accountSid")
                             Dim authToken As String = System.Configuration.ConfigurationManager.AppSettings.Item("authToken")
-                            Dim _fromNumber As String = System.Configuration.ConfigurationManager.AppSettings.Item("fromNumber")
+                            Dim _fromNumber As String = ""
+
+                            If CallerNumber.Length > 0 Then
+                                _fromNumber = CallerNumber
+                            Else
+                                _fromNumber = System.Configuration.ConfigurationManager.AppSettings.Item("fromNumber")
+                            End If
+
 
                             Twilio.TwilioClient.Init(accountSid, authToken)
                             Dim tonumber = New Twilio.Types.PhoneNumber(callNo)
                             Dim fromNumber = New Twilio.Types.PhoneNumber(_fromNumber)
 
-                            VoiceOBj.insertQuery("insert into callLog(network,msg,xmlfile) values('Call','" & VoiceTextalter.Replace("'", """") & "','" & ActualFileName & "')")
+                            VoiceOBj.insertQuery("insert into callLog(network,msg,xmlfile,entrydate) values('Call','" & VoiceTextalter.Replace("'", """") & "','" & ActualFileName & "','" & easternTime & "')")
 
                             CallResource.Create(url:=New Uri(System.Configuration.ConfigurationManager.AppSettings("BasePath") & "/GenerateCallXML.aspx?id=" & VoiceXMLID), from:=fromNumber, [to]:=tonumber)
-                        End If
-
-                    End If
-                    If SMSMessage_ID > 0 Then
-                        If Len(smsNo) > 0 Then
 
 
-                            Dim Message As String = Environment.NewLine
-                            Message = Message & "============"
-                            Message = Message & Environment.NewLine
-							Message = Message & DateString & " " & TimeString
-                            Message = Message & Environment.NewLine
-                            Message = Message & "network=SMS"
-                            Message = Message & Environment.NewLine
-                            Message = Message & "Msg=" & SMSVoiceTextalter
-                            Message = Message & Environment.NewLine
-                            Message = Message & "xmlfile=" & ActualFileName
-                            Message = Message & Environment.NewLine
-                            Message = Message & "sendToNumber=" & callNo
+                        Catch ex As Exception
+                            VoiceOBj.insertQuery("insert into Errorlog(Errormessage,entrydate) values('APPLICATION:->" & ex.Message.ToString.Replace("'", "''") & "','" & easternTime & "')")
 
+                            Dim errMessage As String = Environment.NewLine
+                            errMessage = errMessage & "============"
+                            errMessage = errMessage & Environment.NewLine
+                            errMessage = errMessage & easternTime
+                            errMessage = errMessage & Environment.NewLine
+                            errMessage = errMessage & "Error=" & ex.Message.ToString
 
-                            Dim Temppath As String = HttpContext.Current.Server.MapPath("ErrorLog/ErrorLog.txt")
-                            Using writer As New StreamWriter(Temppath, True)
-                                writer.WriteLine(Message)
+                            Dim errTemppath As String = HttpContext.Current.Server.MapPath("ErrorLog/ErrorLog.txt")
+                            Using writer As New StreamWriter(errTemppath, True)
+                                writer.WriteLine(errMessage)
                                 writer.Close()
                             End Using
+                        End Try
 
+
+
+                    End If
+
+                End If
+                If SMSMessage_ID > 0 Then
+                    If Len(smsNo) > 0 Then
+
+                        Dim timeUtc = DateTime.UtcNow
+                        Dim easternZone As TimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById("Eastern Standard Time")
+                        Dim easternTime As DateTime = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, easternZone)
+
+                        Dim Message As String = Environment.NewLine
+                        Message = Message & "============"
+                        Message = Message & Environment.NewLine
+                        'Message = Message & DateString & " " & TimeString
+                        'Message = Message & "============"
+                        'Message = Message & Environment.NewLine
+                        Message = Message & easternTime
+                        Message = Message & Environment.NewLine
+                        Message = Message & "network=SMS"
+                        Message = Message & Environment.NewLine
+                        Message = Message & "Msg=" & SMSVoiceTextalter
+                        Message = Message & Environment.NewLine
+                        Message = Message & "xmlfile=" & ActualFileName
+                        Message = Message & Environment.NewLine
+                        Message = Message & "sendToNumber=" & callNo
+
+
+                        Dim Temppath As String = HttpContext.Current.Server.MapPath("ErrorLog/ErrorLog.txt")
+                        Using writer As New StreamWriter(Temppath, True)
+                            writer.WriteLine(Message)
+                            writer.Close()
+                        End Using
+
+                        Try
                             Dim accountSid As String = System.Configuration.ConfigurationManager.AppSettings.Item("accountSid")
                             Dim authToken As String = System.Configuration.ConfigurationManager.AppSettings.Item("authToken")
-                            Dim _fromNumber As String = System.Configuration.ConfigurationManager.AppSettings.Item("fromNumber")
+
+                            Dim _fromNumber As String = ""
+
+                            If CallerNumber.Length > 0 Then
+                                _fromNumber = CallerNumber
+                            Else
+                                _fromNumber = System.Configuration.ConfigurationManager.AppSettings.Item("fromNumber")
+                            End If
+
 
                             Twilio.TwilioClient.Init(accountSid, authToken)
                             Dim tonumber = New Twilio.Types.PhoneNumber(smsNo)
                             Dim fromNumber = New Twilio.Types.PhoneNumber(_fromNumber)
 
 
-                            VoiceOBj.insertQuery("insert into callLog(network,msg,xmlfile) values('Message','" & SMSVoiceTextalter.Replace("'", """") & "','" & ActualFileName & "')")
+                            VoiceOBj.insertQuery("insert into callLog(network,msg,xmlfile,entrydate) values('Message','" & SMSVoiceTextalter.Replace("'", """") & "','" & ActualFileName & "','" & easternTime & "')")
 
                             '       Dim Msg As String = HttpUtility.UrlEncode(SMSVoiceTextalter)
                             MessageResource.Create(body:=SMSVoiceTextalter, from:=fromNumber, [to]:=tonumber)
+                        Catch ex As Exception
+                            'Dim VoiceOBj As VoiceClass = New VoiceClass
+                            VoiceOBj.insertQuery("insert into Errorlog(Errormessage,entrydate) values('APPLICATION:->" & ex.Message.ToString.Replace("'", "''") & "','" & easternTime & "')")
 
+                            Dim errMessage As String = Environment.NewLine
+                            errMessage = errMessage & "============"
+                            'errMessage = errMessage & DateString & " " & TimeString
+                            errMessage = errMessage & Environment.NewLine
+                            errMessage = errMessage & easternTime
+                            errMessage = errMessage & Environment.NewLine
+                            errMessage = errMessage & "Error=" & ex.Message.ToString
 
-                        End If
+                            Dim errTemppath As String = HttpContext.Current.Server.MapPath("ErrorLog/ErrorLog.txt")
+                            Using writer As New StreamWriter(errTemppath, True)
+                                writer.WriteLine(errMessage)
+                                writer.Close()
+                            End Using
+                        End Try
                     End If
-                Next
-            End If
-            myRSSFeed.Dispose()
-            myRSSFeed = Nothing
-        Catch ex As Exception
+                End If
+            Next
+        End If
+        myRSSFeed.Dispose()
+        myRSSFeed = Nothing
 
-            Dim VoiceOBj As VoiceClass = New VoiceClass
-            VoiceOBj.insertQuery("insert into Errorlog(Errormessage) values('APPLICATION:->" & ex.Message.ToString.Replace("'", "''") & "')")
+        'Try
 
-            Dim Message As String = Environment.NewLine
-            Message = Message & "============"
-			Message = Message & DateString & " " & TimeString
-            Message = Message & Environment.NewLine
-            Message = Message & "Error=" & ex.Message.ToString
+        'Catch ex As Exception
 
-            Dim Temppath As String = HttpContext.Current.Server.MapPath("ErrorLog/ErrorLog.txt")
-            Using writer As New StreamWriter(Temppath, True)
-                writer.WriteLine(Message)
-                writer.Close()
-            End Using
+        '    Dim VoiceOBj As VoiceClass = New VoiceClass
+        '    VoiceOBj.insertQuery("insert into Errorlog(Errormessage) values('APPLICATION:->" & ex.Message.ToString.Replace("'", "''") & "')")
 
-            myRSSFeed.Dispose()
-            myRSSFeed = Nothing
+        '    Dim Message As String = Environment.NewLine
+        '    Message = Message & "============"
+        '    Message = Message & DateString & " " & TimeString
+        '    Message = Message & Environment.NewLine
+        '    Message = Message & "Error=" & ex.Message.ToString
 
-        End Try
+        '    Dim Temppath As String = HttpContext.Current.Server.MapPath("ErrorLog/ErrorLog.txt")
+        '    Using writer As New StreamWriter(Temppath, True)
+        '        writer.WriteLine(Message)
+        '        writer.Close()
+        '    End Using
+
+        '    myRSSFeed.Dispose()
+        '    myRSSFeed = Nothing
+
+        'End Try
     End Sub
     Public Function say_as(ByVal value As String, ByVal type As String) As String
         If Len(value) > 0 Then

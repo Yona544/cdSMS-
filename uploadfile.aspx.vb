@@ -14,6 +14,15 @@ Partial Class uploadfile
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         Dim VoiceOBj As VoiceClass = New VoiceClass
 
+        Dim Description As String = ""
+        Dim Taglist As String = ""
+        Dim CallerId As String = ""
+
+        Description = Request.Form("description")
+        Taglist = Request.Form("mytags")
+        CallerId = Request.Form("txtCaller")
+
+        'Response.Write(Taglist)
 
         For Each file As String In Request.Files
             Dim hpf As HttpPostedFile = TryCast(Request.Files(file), HttpPostedFile)
@@ -32,12 +41,12 @@ Partial Class uploadfile
                         Exit Sub
                     End Try
                     VoiceOBj.deletefiledetail(mainfilename, "XML")
-                    VoiceOBj.insertfiledetail(mainfilename, "XML")
+                    VoiceOBj.insertfiledetail(mainfilename, "XML", Description, Taglist, CallerId)
                     ''''CODE FOR CREATE CALL AND SMS
 
-
+                    ''hiteshcomment
                     Dim ComFun As CommonFunctions = New CommonFunctions
-                    ComFun.runXmlFile(path, mainfilename)
+                    ComFun.runXmlFile(path, mainfilename, CallerId)
 
 
                 Catch ex As Exception
@@ -52,7 +61,7 @@ Partial Class uploadfile
 
 
         Next
-        
+
 
         Dim isAdmin As String = Request.Form("hdAdmin")
 

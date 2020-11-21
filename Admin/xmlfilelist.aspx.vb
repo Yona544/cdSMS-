@@ -4,10 +4,49 @@ Partial Class Admin_xmlfilelist
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+
+       
+        Dim MemUsername As String = ""
+        Dim MemPassword As String = ""
+
+        Try
+            MemUsername = Request.QueryString("uname")
+            MemPassword = Request.QueryString("pass")
+
+            If MemUsername.Length > 0 And MemPassword.Length > 0 Then
+                Dim sec As security = New security
+                Dim Udata As security.UserData = New security.UserData
+                Udata = sec.UserLogin(MemUsername, MemPassword)
+
+                Dim RetVal As Integer = 0
+                RetVal = Udata.UserID
+                If RetVal > 0 Then
+                    Session.Contents("boothid") = ""
+                    'Dim ticket As FormsAuthenticationTicket = New FormsAuthenticationTicket(1, txtUserName.Text, DateTime.Now, DateTime.Now.AddMinutes(30), True, RetVal, FormsAuthentication.FormsCookiePath)
+                    'Dim encTicket As String = FormsAuthentication.Encrypt(ticket)
+                    'Response.Cookies.Add(New HttpCookie(FormsAuthentication.FormsCookieName, encTicket))
+                    Session.Contents("userid") = RetVal
+                    Session.Contents("usertaglist") = Udata.Taglist
+                    Session.Contents("userIsAdmin") = Udata.IsMainAdmin
+                    Session.Contents("hasTagRights") = Udata.canManageTags
+                    Session.Contents("IsAuthorized") = True
+
+
+                End If
+            End If
+
+
+        Catch ex As Exception
+
+        End Try
+
         Dim TopControl As admin_include_top = New admin_include_top
         TopControl = Me.FindControl("top")
         TopControl.MenuNumber = 8.1
         If Not Page.IsPostBack Then
+
+
+
 
             Dim URObj As security = New security
             Dim GetRights As Boolean = URObj.IsAutherised(Session.Contents("userid"), "Files")
@@ -37,6 +76,29 @@ Partial Class Admin_xmlfilelist
         If Len(Trim(Qry)) <= 0 Then
             Qry = " WHERE filetype='XML' "
         End If
+        Dim strTagQry As String = ""
+        If Session.Contents("userIsAdmin") = "False" Then
+            If Len(Session.Contents("usertaglist")) > 0 Then
+                Dim arrTags As String() = Session.Contents("usertaglist").ToString().Split(",")
+                If arrTags.Length > 0 Then
+                    strTagQry = strTagQry & " AND ("
+                End If
+                For Each item In arrTags
+                    strTagQry = strTagQry & " instr(','+taglist+',','," & item & ",') OR "
+                Next
+                If strTagQry.EndsWith(" OR ") Then
+                    strTagQry = strTagQry.Substring(0, Len(strTagQry) - 3)
+                    'strTagQry = strTagQry & " taglist=''"
+                End If
+                If arrTags.Length > 0 Then
+                    strTagQry = strTagQry & " )"
+                End If
+            Else
+                'strTagQry = strTagQry & " AND (taglist='')"
+                strTagQry = strTagQry & " AND (1=2)"
+            End If
+        End If
+
         AllCatIds.Value = ""
         Dim CatObj As VoiceClass = New VoiceClass
         Dim Sortby As String = ""
@@ -45,8 +107,9 @@ Partial Class Admin_xmlfilelist
         Else
             Sortby = " order by  id desc "
         End If
+
         dgDiscount.PageSize = System.Configuration.ConfigurationManager.AppSettings("AdminPageSize")
-        dgDiscount.DataSource = CatObj.GetVoicefileDataSet(Qry & Sortby)
+        dgDiscount.DataSource = CatObj.GetVoicefileDataSet(Qry & strTagQry & Sortby)
         dgDiscount.DataBind()
         If dgDiscount.Items.Count <= 0 Then
             lblnorecord.Visible = True
@@ -164,10 +227,15 @@ Partial Class Admin_xmlfilelist
             Dim Id As Integer = e.CommandArgument
             Dim XMLObj As VoiceClass = New VoiceClass
             Dim ComFun As CommonFunctions = New CommonFunctions
-            Dim FileName As String = XMLObj.getfilename(" where id=" & Id)
+
+            Dim FileData As VoiceClass.VoiceFileData = New VoiceClass.VoiceFileData
+            FileData = XMLObj.GetFileDetails(" where id=" & Id)
+
+            'Dim FileName As String = XMLObj.getfilename(" where id=" & Id)
+            Dim FileName As String = FileData.FileName
 
             Dim path As String = Server.MapPath("..\files\XML\") & FileName
-            ComFun.runXmlFile(path, FileName)
+            ComFun.runXmlFile(path, FileName, FileData.CallerNumber)
             ScriptManager.RegisterStartupScript(Page, GetType(Page), "alert", "alert('" & FileName & " executed successfully.');", True)
         End If
     End Sub

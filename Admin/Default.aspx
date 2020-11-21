@@ -46,7 +46,7 @@
                         <div class="content-table-inner">
                             <div id="page-heading">
                                 <h1>
-                                    Welcome to Twilio Call Manager Administration Area</h1>
+                                   Welcome to CompuDime Call Manager Administration Area</h1>
                             </div>
                         </div>
                     </td>

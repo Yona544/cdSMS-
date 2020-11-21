@@ -10,6 +10,7 @@
         <%= System.Configuration.ConfigurationManager.AppSettings.Item("AdminTitle")%>
     </title>
     <link rel="stylesheet" href="css/screen.css" type="text/css" media="screen" title="default" />
+    <link rel="stylesheet" href="css/jquery.tag-editor.css">
 </head>
 <body>
     <form id="Form1" runat="server">
@@ -120,6 +121,30 @@
                                                             ValidationGroup="EventsFields"></asp:RegularExpressionValidator>
                                                     </td>
                                                 </tr>
+                                                <tr class="tblrow">
+                                                    <td align="left" class="tblrowheader">
+                                                        Is Main Admin?
+                                                    </td>
+                                                    <td valign="middle" align="left">
+                                                        <asp:CheckBox ID="chkIsMainAdmin" CssClass="checkbox-size" runat="server"></asp:CheckBox>
+                                                    </td>
+                                                </tr>
+                                                <tr class="tblrow">
+                                                    <td align="left" class="tblrowheader">
+                                                        Can manage tags?
+                                                    </td>
+                                                    <td valign="middle" align="left">
+                                                        <asp:CheckBox ID="chkTags" CssClass="checkbox-size" runat="server"></asp:CheckBox>
+                                                    </td>
+                                                </tr>
+                                                <tr class="tblrow">
+                                                    <td align="left" class="tblrowheader">
+                                                        Tags
+                                                    </td>
+                                                    <td valign="middle" align="left">
+                                                        <asp:TextBox TextMode="MultiLine" runat="server" ID="mytags"></asp:TextBox>
+                                                    </td>
+                                                </tr>
                                                 <asp:PlaceHolder ID="PhshowRights" runat="server">
                                                     <tr>
                                                         <td class="tblheader" align="center" colspan="2">
@@ -191,6 +216,18 @@
     <!-- start footer -->
     <uc2:bottom ID="bottom1" runat="server" />
     <!-- end footer -->
+    <script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.10.2/jquery-ui.min.js"></script>
+    <script src="js/jquery.caret.min.js"></script>
+    <script src="js/jquery.tag-editor.js"></script>
+        <script>
+            $(function() {
+                $('#mytags').tagEditor({
+                    delimiter: ', ', /* space and comma */
+                    placeholder: 'Enter tags ...'
+                });
+            })
+            </script>
     </form>
 </body>
 </html>

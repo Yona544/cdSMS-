@@ -21,6 +21,32 @@
             return true;
         } 
     </script>
+    <script language="javascript" type="text/javascript">
+        var AllDelete = true;
+        function SetDelete() {
+            CheckAllDataGridCheckBoxes('chkdelete', AllDelete);
+            if (AllDelete == true) {
+                AllDelete = false;
+            }
+            else {
+                AllDelete = true;
+            }
+        }
+
+        function CheckAllDataGridCheckBoxes(aspCheckBoxID, checkVal) {
+            re = new RegExp(aspCheckBoxID + '$')  //generated control name starts with a colon
+            for (i = 0; i < document.forms[0].elements.length; i++) {
+                elm = document.forms[0].elements[i]
+                if (elm.type == 'checkbox') {
+                    if (elm.disabled == false) {
+                        if (re.test(elm.name)) {
+                            elm.checked = checkVal
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <form id="Form1" runat="server">
@@ -164,7 +190,7 @@
                                                         <HeaderStyle CssClass="tblheader"></HeaderStyle>
                                                         <AlternatingItemStyle CssClass="tblaltrow" />
                                                         <Columns>
-                                                            <asp:TemplateColumn HeaderText="X" HeaderStyle-CssClass="tblheader">
+                                                            <asp:TemplateColumn HeaderText="<a href='Javascript:SetDelete()'>X</a>" HeaderStyle-CssClass="tblheader">
                                                                 <ItemStyle Width="1%" HorizontalAlign="Center" />
                                                                 <HeaderStyle HorizontalAlign="Center" />
                                                                 <ItemTemplate>

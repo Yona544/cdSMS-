@@ -1,4 +1,5 @@
-﻿<%@ Page Language="VB" AutoEventWireup="false" ValidateRequest="false" CodeFile="xmledit.aspx.vb" Inherits="Admin_xmledit" %>
+﻿<%@ Page Language="VB" AutoEventWireup="false" CodeFile="mp3edit.aspx.vb" Inherits="Admin_mp3edit" %>
+
 
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>
 <%@ Register Src="include/top.ascx" TagName="top" TagPrefix="uc1" %>
@@ -23,7 +24,7 @@
             <div id="content">
                 <!--  start page-heading -->
                 <div id="page-heading">
-                    <h1>Edit XML file:&nbsp;<asp:Literal ID="ltFilename" runat="server"></asp:Literal></h1>
+                    <h1>Edit MP3 file:&nbsp;<asp:Literal ID="ltFilename" runat="server"></asp:Literal></h1>
                 </div>
                 <!-- end page-heading -->
                 <table border="0" width="100%" cellpadding="0" cellspacing="0" id="content-table">
@@ -61,10 +62,10 @@
                                                 </td>
                                             </tr>
                                             <tr class="tblrow">
-                                                <td valign="middle" align="left" width="20%" class="tblrowheader">XML File
+                                                <td valign="middle" align="left" width="20%" class="tblrowheader">MP3 File
                                                 </td>
                                                 <td valign="middle" align="left" class="tblrow">
-                                                    <asp:TextBox ID="txtXml" runat="server" Rows="8" Columns="60" TextMode="MultiLine"></asp:TextBox>
+                                                    <asp:Literal ID="ltXmlFile" runat="server"></asp:Literal>
                                                 </td>
                                             </tr>
                                             <tr class="tblrow">
@@ -79,7 +80,8 @@
                                                 <td valign="middle" align="left" width="20%" class="tblrowheader">Caller Number
                                                 </td>
                                                 <td valign="middle" align="left" class="tblrow">
-                                                     <asp:TextBox ID="txtCaller" runat="server"></asp:TextBox>
+                                                    
+                                                    <asp:TextBox ID="txtCaller" runat="server"></asp:TextBox>
                                                 </td>
                                             </tr>
                                             <tr class="tblrow" runat="server" id="rowTags">

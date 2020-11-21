@@ -10,19 +10,45 @@ Public Class security
         Public Password1 As String = ""
         Public Uname As String = ""
         Public Email As String = ""
+        Public Taglist As String = ""
+        Public IsMainAdmin As Boolean = False
+        Public canManageTags As Boolean = False
 
 
     End Class
-    Public Function UserLogin(ByVal Username As String, ByVal Password As String) As Long
-       
+    Public Function UserLogin(ByVal Username As String, ByVal Password As String) As UserData
 
+
+        'Dim conn As OleDbConnection = New OleDbConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ToString)
+        'conn.Open()
+        'Dim cmd As OleDbCommand = New OleDbCommand("SELECT USERID FROM USERS WHERE ISACTIVE=true AND USERNAME='" & Username & "' AND PASSWORD='" & Password & "'", conn)
+        'cmd.CommandType = Data.CommandType.Text
+        'Dim Cnt As String = cmd.ExecuteScalar
+        'conn.Close()
+        'Return Cnt
+
+
+        Dim Udata As UserData = New UserData
+        Udata.UserID = 0
         Dim conn As OleDbConnection = New OleDbConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ToString)
         conn.Open()
-        Dim cmd As OleDbCommand = New OleDbCommand("SELECT USERID FROM USERS WHERE ISACTIVE=true AND USERNAME='" & Username & "' AND PASSWORD='" & Password & "'", conn)
+        Dim cmd As OleDbCommand = New OleDbCommand("SELECT * FROM USERS WHERE ISACTIVE=true AND USERNAME='" & Username & "' AND PASSWORD='" & Password & "'", conn)
         cmd.CommandType = Data.CommandType.Text
-        Dim Cnt As String = cmd.ExecuteScalar
+        Dim rec As OleDbDataReader = cmd.ExecuteReader(CommandBehavior.CloseConnection)
+        While rec.Read
+            Udata.UserName = Trim(rec.Item("username"))
+            Udata.Password = Trim(rec.Item("password"))
+            Udata.Uname = Trim(rec.Item("uname"))
+            Udata.Email = Trim(rec.Item("email"))
+            Udata.Taglist = Trim(IIf(IsDBNull(rec.Item("Taglist")), "", rec.Item("Taglist")))
+            Udata.IsMainAdmin = IIf(IsDBNull(rec.Item("IsMainAdmin")), False, rec.Item("IsMainAdmin"))
+            Udata.canManageTags = IIf(IsDBNull(rec.Item("canManageTags")), False, rec.Item("canManageTags"))
+            Udata.UserID = rec.Item("USERID")
+        End While
+        rec.Close()
+        cmd.Dispose()
         conn.Close()
-        Return Cnt
+        Return Udata
 
     End Function
 
@@ -93,7 +119,9 @@ Public Class security
             Udata.Password = Trim(rec.Item("password"))
             Udata.Uname = Trim(rec.Item("uname"))
             Udata.Email = Trim(rec.Item("email"))
-
+            Udata.Taglist = Trim(IIf(IsDBNull(rec.Item("Taglist")), "", rec.Item("Taglist")))
+            Udata.IsMainAdmin = IIf(IsDBNull(rec.Item("IsMainAdmin")), False, rec.Item("IsMainAdmin"))
+            Udata.canManageTags = IIf(IsDBNull(rec.Item("canManageTags")), False, rec.Item("canManageTags"))
         End While
         rec.Close()
         cmd.Dispose()
@@ -102,7 +130,7 @@ Public Class security
     End Function
     Public Function EditUser(ByVal Udata As UserData) As Double
         Dim conn As OleDbConnection = New OleDbConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ToString)
-        Dim cmd As OleDbCommand = New OleDbCommand("UPDATE USERS set USERNAME='" & Udata.UserName & "',[PASSWORD]='" & Udata.Password & "' ,UNAME='" & Udata.Uname & "',EMAIL='" & Udata.Email & "' where USERID=" & Udata.UserID & "", conn)
+        Dim cmd As OleDbCommand = New OleDbCommand("UPDATE USERS set USERNAME='" & Udata.UserName & "',[PASSWORD]='" & Udata.Password & "' ,UNAME='" & Udata.Uname & "',EMAIL='" & Udata.Email & "',Taglist='" & Udata.Taglist & "',IsMainAdmin=" & Udata.IsMainAdmin & ",canManageTags=" & Udata.canManageTags & " where USERID=" & Udata.UserID & "", conn)
         cmd.CommandType = Data.CommandType.Text
         conn.Open()
         cmd.ExecuteNonQuery()
@@ -112,7 +140,7 @@ Public Class security
         
         Dim conn As OleDbConnection = New OleDbConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ToString)
         'Dim cmd As OleDbCommand = New OleDbCommand("Insert into USERS (USERNAME,PASSWORD,UNAME,EMAIL,IsActive,adminmanage) values ('" & Udata.UserName & "','" & Udata.Password & "' ,'" & Udata.Uname & "','" & Udata.Email & "',true,0)", conn)
-        Dim cmd As OleDbCommand = New OleDbCommand("Insert into USERS(USERNAME,[PASSWORD],UNAME,EMAIL,adminmanage,isactive)values ('" & Udata.UserName & "','" & Udata.Password & "','" & Udata.Uname & "','" & Udata.Email & "',true,true)", conn)
+        Dim cmd As OleDbCommand = New OleDbCommand("Insert into USERS(USERNAME,[PASSWORD],UNAME,EMAIL,Taglist,IsMainAdmin,canManageTags,adminmanage,isactive)values ('" & Udata.UserName & "','" & Udata.Password & "','" & Udata.Uname & "','" & Udata.Email & "','" & Udata.Taglist & "'," & Udata.IsMainAdmin & "," & Udata.canManageTags & ",true,true)", conn)
         cmd.CommandType = Data.CommandType.Text
         conn.Open()
         cmd.ExecuteNonQuery()
@@ -183,7 +211,7 @@ Public Class security
         cmd.CommandType = Data.CommandType.Text
         Return cmd.ExecuteReader(CommandBehavior.CloseConnection)
     End Function
-   
+    
 
     Public Function IsAutherised(ByVal Userid As Integer, ByVal RightsType As String) As Boolean
         Dim conn As OleDbConnection = New OleDbConnection(System.Configuration.ConfigurationManager.ConnectionStrings("ConnectionString").ToString)

@@ -3,9 +3,45 @@ Partial Class Admin_mp3filelist
     Inherits System.Web.UI.Page
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+
+        Dim MemUsername As String = ""
+        Dim MemPassword As String = ""
+
+        Try
+            MemUsername = Request.QueryString("uname")
+            MemPassword = Request.QueryString("pass")
+
+            If MemUsername.Length > 0 And MemPassword.Length > 0 Then
+                Dim sec As security = New security
+                Dim Udata As security.UserData = New security.UserData
+                Udata = sec.UserLogin(MemUsername, MemPassword)
+
+                Dim RetVal As Integer = 0
+                RetVal = Udata.UserID
+                If RetVal > 0 Then
+                    Session.Contents("boothid") = ""
+                    'Dim ticket As FormsAuthenticationTicket = New FormsAuthenticationTicket(1, txtUserName.Text, DateTime.Now, DateTime.Now.AddMinutes(30), True, RetVal, FormsAuthentication.FormsCookiePath)
+                    'Dim encTicket As String = FormsAuthentication.Encrypt(ticket)
+                    'Response.Cookies.Add(New HttpCookie(FormsAuthentication.FormsCookieName, encTicket))
+                    Session.Contents("userid") = RetVal
+                    Session.Contents("usertaglist") = Udata.Taglist
+                    Session.Contents("userIsAdmin") = Udata.IsMainAdmin
+                    Session.Contents("hasTagRights") = Udata.canManageTags
+                    Session.Contents("IsAuthorized") = True
+
+
+                End If
+            End If
+
+
+        Catch ex As Exception
+
+        End Try
+
+
         Dim TopControl As admin_include_top = New admin_include_top
         TopControl = Me.FindControl("top")
-        TopControl.MenuNumber = 8.1
+        TopControl.MenuNumber = 8.2
         If Not Page.IsPostBack Then
 
             Dim URObj As security = New security
@@ -37,6 +73,29 @@ Partial Class Admin_mp3filelist
             Qry = " WHERE filetype='MP3' "
         End If
         AllCatIds.Value = ""
+        Dim strTagQry As String = ""
+        If Session.Contents("userIsAdmin") = "False" Then
+            If Len(Session.Contents("usertaglist")) > 0 Then
+                Dim arrTags As String() = Session.Contents("usertaglist").ToString().Split(",")
+                If arrTags.Length > 0 Then
+                    strTagQry = strTagQry & " AND ("
+                End If
+                For Each item In arrTags
+                    strTagQry = strTagQry & " instr(','+taglist+',','," & item & ",') OR "
+                Next
+                If strTagQry.EndsWith(" OR ") Then
+                    strTagQry = strTagQry.Substring(0, Len(strTagQry) - 3)
+                    'strTagQry = strTagQry & " taglist=''"
+                End If
+                If arrTags.Length > 0 Then
+                    strTagQry = strTagQry & "  )"
+                End If
+            Else
+                'strTagQry = strTagQry & " AND (taglist='')"
+                strTagQry = strTagQry & " AND (1=2)"
+            End If
+        End If
+
         Dim CatObj As VoiceClass = New VoiceClass
         Dim Sortby As String = ""
         If Len(Session.Contents("sess_catOrder")) > 0 Then
@@ -44,8 +103,11 @@ Partial Class Admin_mp3filelist
         Else
             Sortby = " order by  id desc "
         End If
+
+
+
         dgDiscount.PageSize = System.Configuration.ConfigurationManager.AppSettings("AdminPageSize")
-        dgDiscount.DataSource = CatObj.GetVoicefileDataSet(Qry & Sortby)
+        dgDiscount.DataSource = CatObj.GetVoicefileDataSet(Qry & strTagQry & Sortby)
         dgDiscount.DataBind()
         If dgDiscount.Items.Count <= 0 Then
             lblnorecord.Visible = True

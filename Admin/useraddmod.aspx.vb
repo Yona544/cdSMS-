@@ -39,6 +39,10 @@ Partial Class admin_useraddmod
             txtPassword1.Attributes.Add("value", Udata.Password)
             txtName.Text = Udata.Uname
             txtEmail.Text = Udata.Email
+            mytags.Text = Udata.Taglist
+            chkIsMainAdmin.Checked = Udata.IsMainAdmin
+            chkTags.Checked = Udata.canManageTags
+
             Udata = Nothing
             GetIT = Nothing
         End If
@@ -61,7 +65,9 @@ Partial Class admin_useraddmod
             Udata.UserName = txtUserName.Text
             Udata.Password = txtPassword.Text
             Udata.Email = txtEmail.Text
-
+            Udata.Taglist = mytags.Text
+            Udata.IsMainAdmin = chkIsMainAdmin.Checked
+            Udata.canManageTags = chkTags.Checked
             If UserID.Value.Length > 0 And IsNumeric(UserID.Value) Then
 
                 If UserID.Value > 0 Then

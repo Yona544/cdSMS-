@@ -34,6 +34,33 @@
             return true;
         }
     </script>
+    <script language="javascript" type="text/javascript">
+        var AllDelete = true;
+        function SetDelete() {
+            CheckAllDataGridCheckBoxes('chkdelete', AllDelete);
+            if (AllDelete == true) {
+                AllDelete = false;
+            }
+            else {
+                AllDelete = true;
+            }
+        }
+
+        function CheckAllDataGridCheckBoxes(aspCheckBoxID, checkVal) {
+            re = new RegExp(aspCheckBoxID + '$')  //generated control name starts with a colon
+            for (i = 0; i < document.forms[0].elements.length; i++) {
+                elm = document.forms[0].elements[i]
+                if (elm.type == 'checkbox') {
+                    if (elm.disabled == false) {
+                        if (re.test(elm.name)) {
+                            //elm.checked = checkVal
+                            elm.checked = !elm.checked
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body>
     <form id="Form1" runat="server">
@@ -165,7 +192,7 @@
                                                         <HeaderStyle CssClass="tblheader"></HeaderStyle>
                                                         <AlternatingItemStyle CssClass="tblaltrow" />
                                                         <Columns>
-                                                            <asp:TemplateColumn HeaderText="X" HeaderStyle-CssClass="tblheader">
+                                                            <asp:TemplateColumn HeaderText="<a href='Javascript:SetDelete()'>X</a>" HeaderStyle-CssClass="tblheader">
                                                                 <ItemStyle Width="5%" HorizontalAlign="Center" />
                                                                 <HeaderStyle HorizontalAlign="Center" />
                                                                 <ItemTemplate>
@@ -174,20 +201,33 @@
                                                                 </ItemTemplate>
                                                             </asp:TemplateColumn>
                                                             <asp:TemplateColumn HeaderText="Name" HeaderStyle-CssClass="tblheader" SortExpression="Name">
-                                                                <ItemStyle Width="70%" />
+                                                                <ItemStyle Width="17%" />
                                                                 <ItemTemplate>
                                                                     <%# DataBinder.Eval(Container.DataItem, "fileName")%>
                                                                 </ItemTemplate>
                                                             </asp:TemplateColumn>
+                                                            <asp:TemplateColumn HeaderText="Description" HeaderStyle-CssClass="tblheader" SortExpression="Description">
+                                                                    <ItemStyle Width="25%" />
+                                                                    <ItemTemplate>
+                                                                        <%# DataBinder.Eval(Container.DataItem, "Description")%>
+                                                                    </ItemTemplate>
+                                                                </asp:TemplateColumn>
+                                                                <asp:TemplateColumn HeaderText="Last Updated" HeaderStyle-CssClass="tblheader" SortExpression="UpdatedDate">
+                                                                    <ItemStyle Width="18%" />
+                                                                    <ItemTemplate>
+                                                                        <%# DataBinder.Eval(Container.DataItem, "UpdatedDate")%>
+                                                                    </ItemTemplate>
+                                                                </asp:TemplateColumn>
                                                             <asp:TemplateColumn HeaderText="Edit" HeaderStyle-CssClass="tblheader">
-                                                                <ItemStyle Width="8%" />
+                                                                 <HeaderStyle HorizontalAlign="Center" />
+                                                                <ItemStyle Width="10%" HorizontalAlign="Center"/>
                                                                 <ItemTemplate>
                                                                     <a href="xmledit.aspx?id=<%#DataBinder.Eval(Container.DataItem, "id") %>">Edit</a>
                                                                 </ItemTemplate>
                                                             </asp:TemplateColumn>
                                                              <asp:TemplateColumn HeaderText="Run" HeaderStyle-CssClass="tblheader">
                                                                 <HeaderStyle HorizontalAlign="Center" />
-                                                                <ItemStyle Width="8%" HorizontalAlign="Center" />
+                                                                <ItemStyle Width="10%" HorizontalAlign="Center" />
                                                                 <ItemTemplate>
                                                                     <asp:LinkButton ID="lnkrun" runat="server" Text="Run" OnClientClick="return conformbeforerun();"
                                                                         CommandName="Edit" CommandArgument='<%#DataBinder.Eval(Container.DataItem, "id") %>'></asp:LinkButton>
@@ -195,7 +235,7 @@
                                                             </asp:TemplateColumn>
                                                             <asp:TemplateColumn HeaderText="Delete" HeaderStyle-CssClass="tblheader">
                                                                 <HeaderStyle HorizontalAlign="Center" />
-                                                                <ItemStyle Width="8%" HorizontalAlign="Center" />
+                                                                <ItemStyle Width="10%" HorizontalAlign="Center" />
                                                                 <ItemTemplate>
                                                                     <asp:LinkButton ID="lnkRemove" runat="server" Text="Delete" OnClientClick="return conformvalidation();"
                                                                         CommandName="Delete" CommandArgument='<%#DataBinder.Eval(Container.DataItem, "id") %>'></asp:LinkButton>

@@ -15,34 +15,55 @@ This application manages voice calls and SMS messages through Twilio's API, feat
 
 ```
 📁 ROOT (y:/Projects/twiliocallandsms)
-├── 📄 Web.config                    # Main application configuration
-├── 📄 packages.config               # NuGet package definitions
-├── 📄 GenerateCallXML.aspx(.vb)     # 🔥 CRITICAL: Twilio webhook endpoint
-├── 📄 *upload.asp                   # Classic ASP file upload handlers
-├── 📁 Admin/                        # Administrative interface
-│   ├── 📄 login.aspx(.vb)           # Authentication system
-│   ├── 📄 Default.aspx(.vb)         # Admin dashboard
-│   ├── 📄 manage*.aspx(.vb)         # Voice/SMS/file management
-│   ├── 📁 include/                  # Shared user controls
-│   │   ├── 📄 top.ascx(.vb)         # Header control
-│   │   └── 📄 bottom.ascx(.vb)      # Footer control
-│   ├── 📁 css/                      # Admin stylesheets
-│   ├── 📁 images/                   # Admin UI assets
-│   └── 📁 js/                       # jQuery and custom JS
-├── 📁 App_Code/                     # 🔥 BUSINESS LOGIC CLASSES
-│   ├── 📄 CommonFunctions.vb        # Core utilities and Twilio integration
-│   ├── 📄 Security.vb               # User authentication and authorization
-│   └── 📄 VoiceClass.vb             # Voice/SMS operations and database
-├── 📁 App_Data/                     # Data and configuration
-│   ├── 📄 tropo.mdb                 # 🔥 MAIN DATABASE
-│   └── 📁 PublishProfiles/          # Deployment configurations
-├── 📁 Bin/                          # Compiled assemblies
-│   ├── 📄 Twilio.dll                # Twilio SDK v5.24.0
-│   ├── 📄 AjaxControlToolkit.dll    # AJAX controls
-│   └── 📄 Newtonsoft.Json.dll       # JSON processing
-├── 📁 files/mp3/                    # Audio file storage
-├── 📁 ErrorLog/                     # Application error logging
-└── 📁 css/, js/                     # Frontend assets
+├── 📁 legacy/                       # 🔒 LEGACY SYSTEM (Reference Only)
+│   ├── 📄 Web.config                # Main application configuration
+│   ├── 📄 packages.config           # NuGet package definitions
+│   ├── 📄 GenerateCallXML.aspx(.vb) # 🔥 CRITICAL: Twilio webhook endpoint
+│   ├── 📄 *upload.asp               # Classic ASP file upload handlers
+│   ├── 📁 Admin/                    # Administrative interface
+│   │   ├── 📄 login.aspx(.vb)       # Authentication system
+│   │   ├── 📄 Default.aspx(.vb)     # Admin dashboard
+│   │   ├── 📄 manage*.aspx(.vb)     # Voice/SMS/file management
+│   │   ├── 📁 include/              # Shared user controls
+│   │   ├── 📁 css/                  # Admin stylesheets
+│   │   ├── 📁 images/               # Admin UI assets
+│   │   └── 📁 js/                   # jQuery and custom JS
+│   ├── 📁 App_Code/                 # 🔥 BUSINESS LOGIC CLASSES
+│   │   ├── 📄 CommonFunctions.vb    # Core utilities and Twilio integration
+│   │   ├── 📄 Security.vb           # User authentication and authorization
+│   │   └── 📄 VoiceClass.vb         # Voice/SMS operations and database
+│   ├── 📁 App_Data/                 # Data and configuration
+│   │   ├── 📄 tropo.mdb             # 🔥 MAIN DATABASE
+│   │   └── 📁 PublishProfiles/      # Deployment configurations
+│   ├── 📁 Bin/                      # Compiled assemblies
+│   ├── 📁 files/mp3/                # Audio file storage
+│   ├── 📁 ErrorLog/                 # Application error logging
+│   └── 📁 css/, js/                 # Frontend assets
+├── 📁 modern/                       # 🚀 MODERN SYSTEM (Active Development)
+│   ├── 📁 backend/                  # Python FastAPI
+│   │   ├── 📁 app/                  # Main application
+│   │   │   ├── 📁 api/              # API route definitions
+│   │   │   ├── 📁 core/             # Core functionality
+│   │   │   ├── 📁 models/           # Pydantic data models
+│   │   │   ├── 📁 services/         # Business logic services
+│   │   │   └── 📁 utils/            # Utility functions
+│   │   └── 📁 tests/                # Backend tests
+│   ├── 📁 frontend/                 # Vue.js 3 Application
+│   │   ├── 📁 src/                  # Source code
+│   │   │   ├── 📁 components/       # Reusable Vue components
+│   │   │   ├── 📁 views/            # Page-level components
+│   │   │   ├── 📁 stores/           # Pinia state management
+│   │   │   └── 📁 utils/            # Frontend utilities
+│   │   └── 📁 public/               # Static assets
+│   └── 📁 deployment/               # Docker, Fly.io configurations
+├── 📁 docs/                         # 📖 Project Documentation
+│   ├── 📄 PROJECT_GUIDE_FOR_AI_AGENTS.md
+│   ├── 📄 PROJECT_SPECIFICATION.md
+│   └── 📄 IMPLEMENTATION_ROADMAP.md
+├── 📁 migration/                    # 🔄 Migration Tools & Scripts
+├── 📁 shared/                       # 🔧 Shared Resources
+├── 📄 .gitignore                    # Git ignore patterns
+└── 📄 README.md                     # Project overview
 ```
 
 ## 🔧 Technology Stack Details
@@ -97,7 +118,7 @@ UsersRights: UserID, RightsID
 ## 🚪 Critical Entry Points
 
 ### 1. Twilio Webhook (PRIMARY API ENDPOINT)
-**File**: `GenerateCallXML.aspx`
+**File**: `legacy/GenerateCallXML.aspx`
 ```vb
 ' Accepts: ?id={VoiceXMLID}
 ' Returns: TwiML XML for voice calls
@@ -105,17 +126,17 @@ UsersRights: UserID, RightsID
 ```
 
 ### 2. Admin Authentication
-**File**: `Admin/login.aspx`
+**File**: `legacy/Admin/login.aspx`
 ```vb
 ' Session-based authentication
 ' Stores: userid, usertaglist, userIsAdmin, hasTagRights, IsAuthorized
 ```
 
 ### 3. File Upload Handlers
-**Files**: `fileupload.asp`, `mp3upload.asp`, `uploadfile.aspx`, `uploadmp3.aspx`
+**Files**: `legacy/fileupload.asp`, `legacy/mp3upload.asp`, `legacy/uploadfile.aspx`, `legacy/uploadmp3.aspx`
 ```asp
 ' Classic ASP and ASP.NET upload handlers
-' Stores files in /files/mp3/ directory
+' Stores files in legacy/files/mp3/ directory
 ```
 
 ## 📋 Key Classes and Functions
@@ -302,65 +323,103 @@ VoiceOBj.insertQuery("insert into Errorlog(Errormessage,entrydate) values('ERROR
 - No HTTPS enforcement in configuration
 - Basic authentication mechanism
 
-## 🔮 Modernization Roadmap
+## 🔮 Modernization Implementation Status
 
-### Phase 1: Security & Stability
+### Repository Organization
 ```
-✅ Secure credential management (Azure Key Vault/appsettings)
-✅ Input validation and parameterized queries
-✅ HTTPS enforcement
-✅ Error handling improvements
-```
-
-### Phase 2: Database Migration
-```
-✅ Migrate from Access to SQL Server/PostgreSQL
-✅ Implement Entity Framework
-✅ Add connection pooling
-✅ Database backup strategy
+📁 legacy/     - ASP.NET Web Forms VB.NET (preserved for reference)
+📁 modern/     - FastAPI + Vue.js (active development)
+📁 docs/       - Complete documentation and roadmaps
+📁 migration/  - Data migration tools and scripts
+📁 shared/     - Common resources and configurations
 ```
 
-### Phase 3: Architecture Modernization
+### Technology Migration Plan
 ```
-✅ Convert to ASP.NET Core Web API
-✅ Implement dependency injection
-✅ Add repository pattern
-✅ Containerize application (Docker)
+Legacy System (legacy/) → Modern System (modern/)
+ASP.NET Web Forms 4.5   → FastAPI (Python 3.11+)
+VB.NET                  → Python
+Microsoft Access        → SQLite (multi-tenant)
+Session Authentication  → API key authentication
+jQuery/Classic JS       → Vue.js 3 + Composition API
+IIS Deployment         → Docker + Fly.io
 ```
 
-### Phase 4: DevOps & Testing
+### Implementation Status
 ```
-✅ Add unit tests (xUnit/NUnit)
-✅ CI/CD pipeline (GitHub Actions/Azure DevOps)
-✅ Performance monitoring
-✅ Automated deployment
+✅ Phase 1: Legacy system analysis and documentation
+✅ Phase 2: Repository structure organization
+🚧 Phase 3: Modern system implementation (modern/)
+📋 Phase 4: Data migration from Access to SQLite
+📋 Phase 5: Feature parity validation and testing
+📋 Phase 6: Production deployment and cutover
+```
+
+### Modern System Architecture (modern/)
+```
+Backend (modern/backend/):
+- FastAPI with async/await support
+- SQLite database with multi-tenant isolation
+- Pydantic models for data validation
+- Twilio SDK integration for voice/SMS
+- API key-based authentication
+
+Frontend (modern/frontend/):
+- Vue.js 3 with Composition API
+- Vite build system
+- Tailwind CSS for styling
+- Pinia for state management
+- iframe embedding support for Delphi
+
+Deployment (modern/deployment/):
+- Docker containerization
+- Fly.io cloud hosting
+- Automated CI/CD pipeline
 ```
 
 ## 🎯 AI Agent Development Guidelines
 
 ### When Working on This Project:
 
-1. **ALWAYS** backup the Access database before making changes
-2. **NEVER** modify the Twilio webhook URL structure without testing
-3. **USE** VoiceClass methods for all database operations
-4. **VALIDATE** all user inputs before database operations
-5. **TEST** voice call flows in Twilio console before deployment
-6. **PRESERVE** session state management patterns
-7. **MAINTAIN** VB.NET syntax and conventions
-8. **LOG** all errors to both file and database
-9. **RESPECT** the Web Site Project structure (no .csproj needed)
-10. **CONSIDER** security implications of any changes
+#### For Legacy System Analysis (legacy/):
+1. **REFERENCE ONLY** - Do not modify legacy system files
+2. **ANALYZE** business logic for modern system implementation
+3. **UNDERSTAND** data structures for migration planning
+4. **PRESERVE** Twilio webhook compatibility requirements
+5. **DOCUMENT** any missing functionality discoveries
 
-### Quick Development Commands:
+#### For Modern System Development (modern/):
+1. **FOLLOW** the implementation roadmap in `docs/IMPLEMENTATION_ROADMAP.md`
+2. **REFERENCE** complete specifications in `docs/PROJECT_SPECIFICATION.md`
+3. **IMPLEMENT** multi-tenant architecture with API key authentication
+4. **MAINTAIN** feature parity with legacy system
+5. **ENSURE** iframe embedding compatibility for Delphi applications
+6. **TEST** all Twilio integrations thoroughly
+7. **VALIDATE** data migration accuracy
+8. **OPTIMIZE** for performance (<200ms API response times)
+
+### Development Commands:
 ```bash
-# No build needed - Web Site Project compiles at runtime
-# Deploy by copying files to web server
-# Database changes require manual Access modification
+# Legacy System (Reference Only)
+# - No development on legacy system
+# - Use for understanding existing functionality
+
+# Modern System Development
+cd modern/backend
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+
+cd modern/frontend
+npm install
+npm run dev
 ```
 
 ---
 
-**Last Updated**: 2025-08-14  
-**Framework**: ASP.NET Web Forms 4.5  
-**Database**: Microsoft Access (tropo.mdb)  
-**Status**: Production - Legacy System
+**Last Updated**: 2025-08-14
+**Legacy System**: ASP.NET Web Forms 4.5 + VB.NET + Microsoft Access
+**Modern System**: Python FastAPI + Vue.js 3 + SQLite
+**Repository**: Organized for AI agent development
+**Status**: Legacy preserved, Modern system in active development

@@ -1,0 +1,490 @@
+# =============================================================================
+# .gitignore for Multi-Platform Development Project
+# =============================================================================
+# This gitignore covers the current ASP.NET Web Forms VB.NET legacy system
+# and the planned FastAPI + Vue.js modernization stack
+# =============================================================================
+
+# =============================================================================
+# ASP.NET Web Forms & VB.NET (Legacy System)
+# =============================================================================
+
+# Build outputs
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+[Bb]in
+[Oo]bj
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vbproj.user
+*.csproj.user
+*.vbw
+*.aps
+*.ncb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db
+*.VC.VC.opendb
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# NuGet
+packages/
+*.nupkg
+*.snupkg
+.nuget/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Web publish profiles
+PublishProfiles/
+*.pubxml
+*.pubxml.user
+*.publishsettings
+
+# Web Deploy Package
+*.zip
+
+# =============================================================================
+# Python & FastAPI (Modernization Backend)
+# =============================================================================
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+.env/
+
+# Python distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# FastAPI
+.env
+.env.local
+.env.*.local
+
+# =============================================================================
+# Node.js & Vue.js (Modernization Frontend)
+# =============================================================================
+
+# Node.js dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# NYC test coverage
+.nyc_output
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons
+build/Release
+
+# Dependency directories
+jspm_packages/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Vue.js build outputs
+dist/
+.nuxt/
+
+# Vite build cache
+.vite/
+
+# Temporary folders
+tmp/
+temp/
+
+# =============================================================================
+# Database Files
+# =============================================================================
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Access databases (legacy)
+*.mdb
+*.accdb
+*.ldb
+
+# Database backups
+*.bak
+*.backup
+*.sql.bak
+
+# =============================================================================
+# Environment & Configuration
+# =============================================================================
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.example
+
+# Configuration secrets
+config/secrets.yml
+config/database.yml
+secrets/
+credentials/
+
+# API keys and tokens
+*.key
+*.pem
+*.p12
+*.pfx
+api-keys.txt
+tokens.txt
+
+# =============================================================================
+# Logs & Temporary Files
+# =============================================================================
+
+# Log files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Error logs (keep ErrorLog directory structure but ignore contents)
+ErrorLog/*.txt
+ErrorLog/*.log
+
+# =============================================================================
+# Operating System Files
+# =============================================================================
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =============================================================================
+# Development Tools & IDEs
+# =============================================================================
+
+# JetBrains IDEs
+.idea/
+*.swp
+*.swo
+*~
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+
+# Vim
+*.swp
+*.swo
+*.un~
+Session.vim
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# =============================================================================
+# Cloud & Deployment
+# =============================================================================
+
+# Docker
+.dockerignore
+docker-compose.override.yml
+*.tar
+
+# Fly.io
+.fly/
+
+# Heroku
+.heroku/
+
+# AWS
+.aws/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# =============================================================================
+# File Uploads & Media (Project Specific)
+# =============================================================================
+
+# Uploaded files (preserve structure but ignore content)
+files/mp3/*
+!files/mp3/.gitkeep
+files/uploads/*
+!files/uploads/.gitkeep
+files/temp/*
+!files/temp/.gitkeep
+
+# Generated audio files
+*.mp3
+*.wav
+*.m4a
+*.ogg
+*.flac
+
+# Generated XML files (TwiML)
+generated_xml/
+*.twiml
+
+# =============================================================================
+# Build & Package Managers
+# =============================================================================
+
+# Webpack
+.webpack/
+
+# Parcel
+.cache/
+.parcel-cache/
+
+# Rollup
+rollup.config.js
+
+# Build artifacts
+build/
+dist/
+out/
+target/
+
+# Package manager lock files (keep for reproducible builds)
+# Uncomment if you want to ignore lock files
+# package-lock.json
+# yarn.lock
+# Pipfile.lock
+
+# =============================================================================
+# Testing & Coverage
+# =============================================================================
+
+# Test outputs
+test-results/
+coverage/
+.coverage
+htmlcov/
+.pytest_cache/
+.vitest/
+
+# Screenshots from tests
+screenshots/
+test-screenshots/
+
+# =============================================================================
+# Documentation
+# =============================================================================
+
+# Generated documentation
+docs/_build/
+docs/build/
+site/
+
+# =============================================================================
+# Miscellaneous
+# =============================================================================
+
+# Backup files
+*.backup
+*.bak
+*.tmp
+*.temp
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Version control
+.svn/
+.hg/
+.bzr/
+
+# IDE generated files
+*.code-workspace
+.history/
+
+# OS generated files
+.fuse_hidden*
+.directory
+.Trash-*
+
+# =============================================================================
+# Project Specific Exclusions
+# =============================================================================
+
+# Legacy ASP.NET upload directories (keep structure, ignore content)
+App_data/uploads/*
+!App_data/uploads/.gitkeep
+
+# Twilio webhook test files
+webhook-test/
+twilio-logs/
+
+# Migration scripts output
+migration-output/
+legacy-data-export/
+
+# Performance test results
+load-test-results/
+performance-logs/
+
+# Documentation builds
+docs-build/
+api-docs/
+
+# =============================================================================
+# END OF .gitignore
+# =============================================================================

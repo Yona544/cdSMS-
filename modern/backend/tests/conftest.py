@@ -63,14 +63,21 @@ async def db_session(db_engine) -> AsyncGenerator[AsyncSession, None]:
 # --- API Client Fixture ---
 
 @pytest.fixture(scope="function")
-async def async_client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
+async def async_client(db_session: AsyncSession, test_settings: Settings) -> AsyncGenerator[AsyncClient, None]:
     """An async client for testing the API."""
-    def override_get_session() -> AsyncGenerator[AsyncSession, None]:
+
+    def override_get_session():
         yield db_session
 
+    def override_get_settings():
+        return test_settings
+
     app.dependency_overrides[get_session] = override_get_session
+    app.dependency_overrides[get_settings] = override_get_settings
+
     async with AsyncClient(app=app, base_url="http://test") as client:
         yield client
+
     app.dependency_overrides.clear()
 
 # --- Tenant Fixture ---

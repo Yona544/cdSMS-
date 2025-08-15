@@ -1,0 +1,46 @@
+import pytest
+from fastapi.testclient import TestClient
+from app.main import app  # This import will fail until the path issue is resolved
+
+# Note: This test will not pass until the environment issues are resolved.
+# The TestClient needs a seeded database, which should be handled by a fixture.
+# The 'app' import will also fail.
+
+client = TestClient(app)
+
+def test_authentication_with_header(seeded_db):
+    """Test authentication with X-API-Key header"""
+    response = client.get(
+        "/api/tenant/profile",
+        headers={"X-API-Key": "acme_api_key_12345"}
+    )
+    assert response.status_code == 200
+    assert response.json()["id"] == "acme-corp"
+
+def test_authentication_with_bearer_token(seeded_db):
+    """Test authentication with Bearer token"""
+    response = client.get(
+        "/api/tenant/profile",
+        headers={"Authorization": "Bearer acme_api_key_12345"}
+    )
+    assert response.status_code == 200
+    assert response.json()["id"] == "acme-corp"
+
+def test_authentication_with_query_param(seeded_db):
+    """Test authentication with query parameter"""
+    response = client.get("/api/tenant/profile?apiKey=acme_api_key_12345")
+    assert response.status_code == 200
+    assert response.json()["id"] == "acme-corp"
+
+def test_invalid_api_key(seeded_db):
+    """Test invalid API key returns 401"""
+    response = client.get(
+        "/api/tenant/profile",
+        headers={"X-API-Key": "invalid_key"}
+    )
+    assert response.status_code == 401
+
+def test_missing_api_key(seeded_db):
+    """Test missing API key returns 401"""
+    response = client.get("/api/tenant/profile")
+    assert response.status_code == 401

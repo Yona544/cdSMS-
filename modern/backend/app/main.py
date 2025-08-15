@@ -16,6 +16,10 @@ app.include_router(communication_router.router, prefix="/api")
 # Webhook router does not have a prefix and has its own security (or lack thereof)
 app.include_router(webhooks_router.router)
 
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
 @app.get("/api/tenant/profile", response_model=TenantResponse)
 async def get_tenant_profile(tenant: TenantResponse = Depends(get_current_tenant)):
     """

@@ -165,7 +165,6 @@ class DatabaseManager:
                 tenant_id TEXT NOT NULL,
                 username TEXT NOT NULL,
                 password_hash TEXT NOT NULL,
-                display_.py
                 display_name TEXT NOT NULL,
                 email TEXT,
                 permissions JSON,

@@ -11,10 +11,16 @@ export default defineConfig({
   },
   server: {
     port: 3000,
+    // Use polling watcher to avoid Windows network/FS watch issues, and ignore large static folders
+    watch: {
+      usePolling: true,
+      ignored: ['**/public/legacy/**', '**/legacy/admin/**'],
+    },
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: 'http://localhost:8001',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, '/v1'),
       },
     },
   },

@@ -1,3 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Base app stylesheet (placeholder)
+   This file satisfies the import in main.js without requiring Tailwind/PostCSS.
+   Add project-wide styles here as needed. */
+
+html, body, #app {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  color: #111827;
+  background-color: #f3f4f6;
+}

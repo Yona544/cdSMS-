@@ -36,18 +36,22 @@ if not exist "%LOG_DIR%"    mkdir "%LOG_DIR%"
 
 REM ----- tools -----
 where powershell >nul 2>nul || (echo [ERROR] PowerShell not found. & goto :fail_pause)
-where npm        >nul 2>nul || (echo [ERROR] npm not found. Install Node.js LTS. & goto :fail_pause)
-where node       >nul 2>nul || (echo [ERROR] Node.js not found. Install Node.js LTS. & goto :fail_pause)
 
-REM Find npm.cmd explicitly (bypasses npm.ps1 execution policy issues)
-set "NPM_CMD_EXE="
-for /f "delims=" %%P in ('where npm.cmd 2^>nul') do (
-  if not defined NPM_CMD_EXE set "NPM_CMD_EXE=%%~fP"
-)
-if not defined NPM_CMD_EXE if exist "%ProgramFiles%\nodejs\npm.cmd" set "NPM_CMD_EXE=%ProgramFiles%\nodejs\npm.cmd"
-if not defined NPM_CMD_EXE (
-  echo [ERROR] Unable to locate npm.cmd. Ensure Node.js is installed.
-  goto :fail_pause
+REM Gate Node/npm checks to modes that involve the frontend (both|frontend)
+if /I not "%MODE%"=="backend" (
+  where npm        >nul 2>nul || (echo [ERROR] npm not found. Install Node.js LTS. & goto :fail_pause)
+  where node       >nul 2>nul || (echo [ERROR] Node.js not found. Install Node.js LTS. & goto :fail_pause)
+
+  REM Find npm.cmd explicitly (bypasses npm.ps1 execution policy issues)
+  set "NPM_CMD_EXE="
+  for /f "delims=" %%P in ('where npm.cmd 2^>nul') do (
+    if not defined NPM_CMD_EXE set "NPM_CMD_EXE=%%~fP"
+  )
+  if not defined NPM_CMD_EXE if exist "%ProgramFiles%\nodejs\npm.cmd" set "NPM_CMD_EXE=%ProgramFiles%\nodejs\npm.cmd"
+  if not defined NPM_CMD_EXE (
+    echo [ERROR] Unable to locate npm.cmd. Ensure Node.js is installed.
+    goto :fail_pause
+  )
 )
 
 set "PYTHON_EXE=python"
@@ -245,7 +249,7 @@ if not defined RUN_BACKEND_ONLY echo FRONTEND_LOG=%FRONTEND_LOG%>> "%STATE_FILE%
 exit /b 0
 
 :post_launch_checks
-set "PROBE_BACKEND_URL=http://localhost:%BACKEND_PORT%/health"
+set "PROBE_BACKEND_URL=http://localhost:%BACKEND_PORT%/v1/health/healthz"
 powershell -NoProfile -Command "$ProgressPreference='SilentlyContinue'; try { $null = Invoke-WebRequest '%PROBE_BACKEND_URL%' -UseBasicParsing -TimeoutSec 1; exit 0 } catch { exit 1 }"
 if errorlevel 1 set "PROBE_BACKEND_URL=http://localhost:%BACKEND_PORT%/docs"
 

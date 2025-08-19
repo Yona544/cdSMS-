@@ -5,6 +5,10 @@ from prometheus_fastapi_instrumentator import Instrumentator
 from app.core.settings import get_settings
 from app.api.v1 import health as health_router
 from app.api.v1 import sms as sms_router
+from app.api import communication as communication_router
+from app.api import files as files_router
+from app.api import voice as voice_router
+from app.api import webhooks as webhooks_router
 
 # Get settings instance
 settings = get_settings()
@@ -38,3 +42,8 @@ async def read_root():
 # Include v1 routers
 app.include_router(health_router.router, prefix=settings.api_base_path)
 app.include_router(sms_router.router, prefix=settings.api_base_path)
+# Include additional routers under the same API base path (/v1)
+app.include_router(communication_router.router, prefix=settings.api_base_path)
+app.include_router(files_router.router, prefix=settings.api_base_path)
+app.include_router(voice_router.router, prefix=settings.api_base_path)
+app.include_router(webhooks_router.router, prefix=settings.api_base_path)

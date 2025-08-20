@@ -2,13 +2,14 @@ import sqlite3
 import os
 from typing import Generator, Optional
 from contextlib import contextmanager
-from app.core.config import settings
+from app.core.settings import get_settings
 import logging
 
 logger = logging.getLogger(__name__)
 
 class DatabaseManager:
     def __init__(self, db_path: str = None):
+        settings = get_settings()
         self.db_path = db_path or settings.database_path
         self.ensure_database_exists()
         self.init_schema()
@@ -47,6 +48,7 @@ class DatabaseManager:
             self._create_communication_log_table(cursor)
             self._create_error_log_table(cursor)
             self._create_users_table(cursor)
+            self._create_sms_templates_table(cursor)
             self._create_indexes(cursor)
 
             conn.commit()
@@ -178,6 +180,21 @@ class DatabaseManager:
             )
         """)
 
+    def _create_sms_templates_table(self, cursor):
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS sms_templates (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tenant_id TEXT NOT NULL,
+                template_id TEXT NOT NULL,
+                content TEXT NOT NULL,
+                is_active BOOLEAN DEFAULT 1,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
+                UNIQUE(tenant_id, template_id)
+            )
+        """)
+ 
     def _create_indexes(self, cursor):
         """Create performance indexes"""
         indexes = [
@@ -188,8 +205,9 @@ class DatabaseManager:
             "CREATE INDEX IF NOT EXISTS idx_communication_log_tenant_date ON communication_log(tenant_id, created_at DESC)",
             "CREATE INDEX IF NOT EXISTS idx_error_log_tenant_date ON error_log(tenant_id, created_at DESC)",
             "CREATE INDEX IF NOT EXISTS idx_users_tenant_username ON users(tenant_id, username)",
+            "CREATE INDEX IF NOT EXISTS idx_sms_templates_tenant_template ON sms_templates(tenant_id, template_id)",
         ]
-
+ 
         for index_sql in indexes:
             cursor.execute(index_sql)
 

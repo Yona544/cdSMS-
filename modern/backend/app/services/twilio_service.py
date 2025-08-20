@@ -9,7 +9,7 @@ from datetime import datetime
 
 from app.models.schemas import TenantResponse, VoiceMessageResponse
 from app.services.voice_service import voice_service
-from app.core.config import settings
+from app.core.settings import get_settings
 from app.core.database import DatabaseManager
 
 logger = logging.getLogger(__name__)
@@ -35,8 +35,10 @@ class TwilioService:
             twiml_content = self._generate_twiml(voice_message, variables or {})
             xml_id = await self._store_voice_xml(voice_message_id, twiml_content)
 
-            # This needs to be a publicly accessible URL
-            webhook_url = f"https://your-app-domain.com/webhooks/twilio/voice-xml/{xml_id}"
+            # Build webhook URL from consolidated settings
+            settings = get_settings()
+            base = settings.public_base_url.rstrip("/")
+            webhook_url = f"{base}{settings.api_base_path}/webhooks/twilio/voice-xml/{xml_id}"
 
             call = self.client.calls.create(
                 to=to_number,

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator, EmailStr
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from enum import Enum
@@ -58,6 +58,26 @@ class TenantResponse(TenantBase):
     is_active: bool
     created_at: datetime
     updated_at: datetime
+
+# User Models
+class UserBase(BaseSchema):
+    username: str = Field(..., min_length=1, max_length=100)
+    display_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    is_admin: bool = False
+    tags: Optional[str] = ""
+
+class UserCreate(UserBase):
+    pass
+
+class UserUpdate(BaseSchema):
+    display_name: Optional[str] = None
+    email: Optional[EmailStr] = None
+    is_admin: Optional[bool] = None
+    tags: Optional[str] = None
+
+class UserResponse(UserBase):
+    id: int
 
 # Voice Message Models
 class VoiceMessageBase(BaseSchema):
@@ -139,6 +159,25 @@ class CommunicationLogResponse(BaseSchema):
     cost_amount: Optional[float]
     duration_seconds: Optional[int]
     created_at: datetime
+ 
+# SMS Template Models
+class SMSTemplateBase(BaseSchema):
+    template_id: str = Field(..., min_length=1, max_length=100, pattern=r'^[A-Za-z0-9._-]+$')
+    content: str = Field(..., min_length=1, max_length=1600)
+ 
+class SMSTemplateCreate(SMSTemplateBase):
+    pass
+ 
+class SMSTemplateUpdate(BaseSchema):
+    content: Optional[str] = Field(None, min_length=1, max_length=1600)
+    is_active: Optional[bool] = None
+ 
+class SMSTemplateResponse(SMSTemplateBase):
+    id: int
+    tenant_id: str
+    is_active: bool
+    created_at: datetime
+    updated_at: datetime
 
 # API Response Models
 class APIResponse(BaseSchema):

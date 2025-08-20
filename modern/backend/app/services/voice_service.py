@@ -1,4 +1,5 @@
 import sqlite3
+import json
 from typing import List, Tuple, Optional
 from app.core.database import DatabaseManager
 from app.models.schemas import VoiceMessageCreate, VoiceMessageUpdate, VoiceMessageResponse
@@ -10,7 +11,15 @@ class VoiceService:
         self.db_manager = DatabaseManager()
 
     def _row_to_response(self, row: sqlite3.Row) -> VoiceMessageResponse:
-        return VoiceMessageResponse.model_validate(dict(row))
+        data = dict(row)
+        # Normalize JSON fields
+        if "voice_settings" in data and isinstance(data["voice_settings"], str) and data["voice_settings"]:
+            try:
+                data["voice_settings"] = json.loads(data["voice_settings"])
+            except Exception:
+                # Leave as-is if not valid JSON
+                pass
+        return VoiceMessageResponse.model_validate(data)
 
     def create_voice_message(self, tenant_id: str, message_data: VoiceMessageCreate) -> VoiceMessageResponse:
         with self.db_manager.get_connection() as conn:
@@ -29,7 +38,7 @@ class VoiceService:
                     message_data.voice_rate.value,
                     message_data.tropo_voice,
                     message_data.voice_type,
-                    None # message_data.voice_settings (json)
+                    (json.dumps(message_data.voice_settings) if message_data.voice_settings is not None else None)
                 ),
             )
             new_id = cursor.lastrowid
@@ -68,11 +77,15 @@ class VoiceService:
         if not update_fields:
             raise ValueError("No update data provided")
 
-        # Convert enums to their string values for the query
-        if 'voice_gender' in update_fields:
+        # Convert enums/objects to string values for the query
+        if 'voice_gender' in update_fields and update_fields['voice_gender'] is not None:
             update_fields['voice_gender'] = update_fields['voice_gender'].value
-        if 'voice_rate' in update_fields:
+        if 'voice_rate' in update_fields and update_fields['voice_rate'] is not None:
             update_fields['voice_rate'] = update_fields['voice_rate'].value
+        if 'voice_settings' in update_fields:
+            update_fields['voice_settings'] = (
+                json.dumps(update_fields['voice_settings']) if update_fields['voice_settings'] is not None else None
+            )
 
         set_clause = ", ".join([f"{field} = ?" for field in update_fields.keys()])
 
